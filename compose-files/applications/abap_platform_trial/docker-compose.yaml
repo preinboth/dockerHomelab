@@ -1,0 +1,25 @@
+services:
+    a4h:
+        image: sapse/abap-cloud-developer-trial:ABAPTRIAL_2022_SP01
+        container_name: a4h2
+        hostname: vhcala4hci
+        ports:
+            - '3200:3200'
+            - '3300:3300'
+            - '8443:8443'
+            - '30213:30213'
+            - '50000:50000'
+            - '50001:50001'
+        stop_grace_period: 3600s
+        stdin_open: true
+        tty: true
+        command: ["-skip-limits-check", "-agree-to-sap-license"]
+        networks:
+            - abap_trial_default
+            - homelab_network
+
+networks:
+  abap_trial_default:
+    driver: bridge
+  homelab_network:
+    external: true

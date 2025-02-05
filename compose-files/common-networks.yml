@@ -1,0 +1,8 @@
+version: '3.9'
+networks:
+  homelab_network:
+    driver: bridge
+    name: homelab_network
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24
