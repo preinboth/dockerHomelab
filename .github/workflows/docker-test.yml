@@ -1,4 +1,5 @@
 name: Test Docker Compose
+
 on: [push]
 
 jobs:
@@ -11,6 +12,8 @@ jobs:
       - name: Docker Compose testen
         run: |
           docker compose -f compose-files/common-networks.yml config
-          for dir in compose-files/applications/*/ ; do
-              docker compose -f "$dir/docker-compose.yml" config
+          for dir in compose-files/applications/*/docker-compose.yml ; do
+              if [ -f "$dir" ]; then
+                  docker compose -f "$dir" config
+              fi
           done
