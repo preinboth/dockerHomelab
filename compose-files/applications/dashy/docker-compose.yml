@@ -1,0 +1,29 @@
+services:
+  dashy:
+    container_name: dashy
+    image: lissy93/dashy
+    restart: unless-stopped
+    volumes:
+      - dashy_data:/app/user-data/conf.yml
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    healthcheck:
+      test: ['CMD', 'node', '/app/services/healthcheck']
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - homelab_network
+      - default
+    ports:
+      - 8090:8080
+volumes:
+  dashy_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/lib/docker/volumes/dashy/_data
