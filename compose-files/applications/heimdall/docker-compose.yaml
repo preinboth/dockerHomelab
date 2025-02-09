@@ -1,0 +1,34 @@
+---
+version: '3'
+
+services:
+  heimdall:
+    image: linuxserver/heimdall:latest
+    container_name: heimdall
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /home/preinboth/SynologyDrive/Docker_Volumes/heimdall/config:/config
+    environment:
+      - PGID=1000
+      - PUID=1000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.heimdall.entrypoints=websecure"
+      - "traefik.http.routers.heimdall.rule=Host(`heimdall.pr-homelab.org`)"  # Domain anpassen
+      - "traefik.http.routers.heimdall.tls=true"
+      - "traefik.http.routers.heimdall.tls.certresolver=default"
+      - "traefik.http.routers.heimdall.middlewares=secHeaders@file"
+      - "traefik.http.services.heimdall.loadbalancer.server.port=80"
+    networks:
+      - traefik_proxy
+      - default
+    ports:
+      - 8085:80
+networks:
+  traefik_proxy:
+    external:
+      name: traefik_proxy
+  default:
+    driver: bridge

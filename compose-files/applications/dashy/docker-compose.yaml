@@ -1,10 +1,10 @@
 services:
   dashy:
     container_name: dashy
-    image: lissy93/dashy
+    image: lissy93/dashy:latest
     restart: unless-stopped
     volumes:
-      - dashy_data:/app/user-data/conf.yml
+      - dashy_data:/app/user-data
     environment:
       - PUID=1000
       - PGID=1000
@@ -22,8 +22,3 @@ services:
       - 8090:8080
 volumes:
   dashy_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /var/lib/docker/volumes/dashy/_data
