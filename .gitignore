@@ -711,4 +711,4 @@ cython_debug/
 
 
 
-.zip
+*.zip
