@@ -1,21 +1,19 @@
-version: '3.0'
-
 services:
   seatable:
     image: seatable/seatable-developer:latest
     container_name: seatable
     ports:
-      - "80:80"  # Ändern Sie dies, wenn Port 80 bereits verwendet wird
-      - "443:443" # Ändern Sie dies, wenn Port 443 bereits verwendet wird
+      - "8096:80"  # Ändern Sie dies, wenn Port 80 bereits verwendet wird
+      - "6443:443" # Ändern Sie dies, wenn Port 443 bereits verwendet wird
     volumes:
       - /opt/seatable/data:/shared   # Pfad zum Datenverzeichnis (anpassen)
     environment:
       - DB_HOST=db
-      - DB_ROOT_PASSWORD=your_db_root_password # Sicheres Root-Passwort für MariaDB
-      - SEATABLE_SERVER_HOSTNAME=your_domain.com  # Ihre Domain (ohne http/https)
-      - SEATABLE_SERVER_SCHEME=https # Ändern Sie dies in "http", wenn Sie kein HTTPS verwenden
-      - SEATABLE_ADMIN_EMAIL=your_email@example.com   # Admin-E-Mail-Adresse
-      - SEATABLE_ADMIN_PASSWORD=your_admin_password  # Admin-Passwort
+      - DB_ROOT_PASSWORD=${DB_PASSWORD} # Sicheres Root-Passwort für MariaDB
+      - SEATABLE_SERVER_HOSTNAME=${DOMAIN}  # Ihre Domain (ohne http/https)
+      - SEATABLE_SERVER_SCHEME=http # Ändern Sie dies in "http", wenn Sie kein HTTPS verwenden
+      - SEATABLE_ADMIN_EMAIL=${ADMIN_EMAIL}   # Admin-E-Mail-Adresse
+      - SEATABLE_ADMIN_PASSWORD=${ADMIN_PASSWORD}  # Admin-Passwort
     depends_on:
       - db
     networks:
@@ -27,7 +25,7 @@ services:
     volumes:
       - /opt/seatable/db-data:/var/lib/mysql  # Pfad zum DB-Datenverzeichnis (anpassen)
     environment:
-      - MYSQL_ROOT_PASSWORD=your_db_root_password # Sicheres Root-Passwort für MariaDB
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} # Sicheres Root-Passwort für MariaDB
     networks:
       - seatable-net
 
