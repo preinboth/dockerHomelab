@@ -1,8 +1,6 @@
-version: "3.7"
-
 networks:
-  frontend:
-  backend:
+  op_frontend:
+  op_backend:
 
 volumes:
   pgdata:
@@ -11,7 +9,7 @@ volumes:
 x-op-restart-policy: &restart_policy
   restart: unless-stopped
 x-op-image: &image
-  image: openproject/community:${TAG:-13}
+  image: openproject/openproject:${TAG:-15-slim}
 x-op-app: &app
   <<: [*image, *restart_policy]
   environment:
@@ -40,33 +38,34 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-p4ssw0rd}
       POSTGRES_DB: openproject
     networks:
-      - backend
+      - op_backend
 
   cache:
     image: memcached
     <<: *restart_policy
     networks:
-      - backend
+      - op_backend
 
   proxy:
-    <<: [*image, *restart_policy]
-    command: "./docker/prod/proxy"
+    build:
+      context: ./proxy
+      args:
+        APP_HOST: web
+    image: openproject/proxy
+    <<: *restart_policy
     ports:
       - "${PORT:-8080}:80"
-    environment:
-      APP_HOST: web
-      OPENPROJECT_RAILS__RELATIVE__URL__ROOT: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}"
     depends_on:
       - web
     networks:
-      - frontend
+      - op_frontend
 
   web:
     <<: *app
     command: "./docker/prod/web"
     networks:
-      - frontend
-      - backend
+      - op_frontend
+      - op_backend
     depends_on:
       - db
       - cache
@@ -93,7 +92,7 @@ services:
     <<: *app
     command: "./docker/prod/worker"
     networks:
-      - backend
+      - op_backend
     depends_on:
       - db
       - cache
@@ -103,7 +102,7 @@ services:
     <<: *app
     command: "./docker/prod/cron"
     networks:
-      - backend
+      - op_backend
     depends_on:
       - db
       - cache
@@ -114,5 +113,4 @@ services:
     command: "./docker/prod/seeder"
     restart: on-failure
     networks:
-      - backend
-
+      - op_backend
